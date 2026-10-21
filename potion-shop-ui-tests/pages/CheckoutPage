@@ -1,0 +1,104 @@
+// pages/CheckoutPage.js
+
+class CheckoutPage {
+    constructor(page) {
+        this.page = page;
+
+        // --- Locators for the Potion Builder (Targeting the visible card) ---
+        this.healingPotionRadio = page.locator('.potion-card').filter({ hasText: 'Healing Draught' });
+        this.strengthPotionRadio = page.locator('.potion-card').filter({ hasText: 'Elixir of Strength' });
+        this.wisdomPotionRadio = page.locator('.potion-card').filter({ hasText: 'Potion of Wisdom' });
+        this.invisibilityPotionRadio = page.locator('.potion-card').filter({ hasText: 'Invisibility Brew' });
+
+        // --- Locators for the Size Options ---
+        this.smallSizeRadio = page.locator('.size-option').filter({ hasText: 'Vial' });
+        this.mediumSizeRadio = page.locator('.size-option').filter({ hasText: 'Flask' });
+        this.largeSizeRadio = page.locator('.size-option').filter({ hasText: 'Bottle' });
+
+        this.moonStoneCheckbox = page.getByRole('checkbox', { name: 'Moonstone' });
+        this.dragonScaleCheckbox = page.getByRole('checkbox', { name: 'Dragon Scale' });
+        this.phoenixFeatherCheckbox = page.getByRole('checkbox', { name: 'Phoenix Feather' });
+        this.enchantedHoneyCheckbox = page.getByRole('checkbox', { name: 'Enchanted Honey' });
+        this.shadowEssenceCheckbox = page.getByRole('checkbox', { name: 'Shadow Essence' });
+        this.starlightDewCheckbox = page.getByRole('checkbox', { name: 'Starlight Dew' });
+
+        this.lowPotencyRadio = page.getByRole('radio', { name: 'Standard' });
+        this.mediumPotencyRadio = page.getByRole('radio', { name: 'Enhanced' });
+        this.highPotencyRadio = page.getByRole('radio', { name: 'Maximum' });
+
+        this.decreaseQuantityButton = page.locator('button[onclick="changeQuantity(-1)"]');
+        this.increaseQuantityButton = page.locator('button[onclick="changeQuantity(1)"]');
+        this.quantityInput = page.locator('#quantity');
+
+        // --- Delivery Details Form (User-Facing Locators) ---
+        this.nameInput = page.getByLabel('Full Name');
+        this.emailInput = page.getByPlaceholder('Contact Crystal (email)');
+        this.castleInput = page.getByLabel('Castle/Tower Name');
+        this.towerInput = page.getByLabel('Tower/Room Number');
+        this.kingdomInput = page.getByLabel('Kingdom/Realm');
+
+        this.standardDeliveryRadio = page.getByRole('radio', { name: 'Owl Post' });
+        this.expressDeliveryRadio = page.getByRole('radio', { name: 'Dragon Express' });
+
+        // --- Actions & Results ---
+        this.submitOrderButton = page.getByRole('button', { name: 'Submit' });
+        this.confirmationModal = page.locator('#confirmation-modal');
+        this.orderNumberText = page.locator('#order-number');
+        this.deliveryEstimateText = page.locator('#delivery-estimate');
+    }
+
+    // --- ACTION METHODS ---
+
+    async selectHealingPotion() {
+        await this.healingPotionRadio.click();
+    }
+
+    async selectInvisibilityPotion() {
+            await this.invisibilityPotionRadio.click();
+        }
+
+    async fillDeliveryDetails(name, castle, kingdom) {
+        await this.nameInput.fill(name);
+        await this.castleInput.fill(castle);
+        await this.kingdomInput.fill(kingdom);
+    }
+
+    async clickSubmitOrder() {
+        await this.submitOrderButton.click();
+    }
+
+    async increaseQuantity() {
+        await this.increaseQuantityButton.click();
+    }
+
+    async decreaseQuantity() {
+        await this.decreaseQuantityButton.click();
+    }
+
+    async getQuantity() {
+        return await this.quantityInput;
+    }
+
+    async getOrderNumber() {
+        return await this.orderNumberText.innerText();
+    }
+
+    async selectLargeSize() {
+            await this.largeSizeRadio.click();
+    }
+
+    async selectEnhancedPotency() {
+            await this.mediumPotencyRadio.click();
+    }
+
+    async addMoonstone() {
+            await this.moonStoneCheckbox.click();
+    }
+
+    async addDragonScale() {
+            await this.dragonScaleCheckbox.click();
+    }
+
+}
+
+module.exports = { CheckoutPage };
