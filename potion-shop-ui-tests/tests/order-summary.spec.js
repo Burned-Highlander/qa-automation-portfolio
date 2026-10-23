@@ -13,7 +13,8 @@ test.describe('Order Summary Pricing Validation', () => {
         checkoutPage = new CheckoutPage(page);
         orderSummaryPage = new OrderSummaryPage(page);
 
-        await page.goto('https://qe-at-cgi-fi.github.io/potion-shop/');
+        await page.goto('/potion-shop/');
+        await page.screenshot({ path: 'debug-order-summary-start.png', fullPage: true });
     });
 
     test('Scenario 1: Simple Order calculates correct subtotal and total', async () => {

@@ -1,12 +1,12 @@
-// helpers/ApiHelper.js
+// restful-booker-api-tests/helpers/ApiHelper.js
 
 class ApiHelper {
     constructor(request) {
         this.request = request;
-        this.baseUrl = 'https://automationintesting.online';
+        // No need to hardcode baseURL here anymore!
+        // Playwright's request context automatically uses the baseURL from playwright.config.js
     }
 
-    // Common headers used across all requests
     get defaultHeaders() {
         return {
             'Content-Type': 'application/json',
@@ -14,30 +14,24 @@ class ApiHelper {
         };
     }
 
-    // Generic GET request
     async get(endpoint, params = {}) {
-        const url = `${this.baseUrl}${endpoint}`;
         const queryParams = new URLSearchParams(params).toString();
-        const fullUrl = queryParams ? `${url}?${queryParams}` : url;
+        const url = queryParams ? `${endpoint}?${queryParams}` : endpoint;
 
-        return await this.request.get(fullUrl, {
+        return await this.request.get(url, {
             headers: this.defaultHeaders
         });
     }
 
-    // Generic POST request
     async post(endpoint, payload) {
-        const url = `${this.baseUrl}${endpoint}`;
-        return await this.request.post(url, {
+        return await this.request.post(endpoint, {
             data: payload,
             headers: this.defaultHeaders
         });
     }
 
-    // Generic PUT request
     async put(endpoint, payload) {
-        const url = `${this.baseUrl}${endpoint}`;
-        return await this.request.put(url, {
+        return await this.request.put(endpoint, {
             data: payload,
             headers: this.defaultHeaders
         });

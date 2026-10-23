@@ -1,7 +1,7 @@
 // tests/API tests/api-performance.spec.js
 
 const { test, expect } = require('@playwright/test');
-const { ApiHelper } = require('../../helpers/ApiHelper');
+const { ApiHelper } = require('../helpers/ApiHelper');
 
 // Simple nearest-rank percentile calculation
 function percentile(values, p) {

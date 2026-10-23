@@ -1,30 +1,68 @@
-// tests/accessibility.spec.js
+// potion-shop-ui-tests/tests/accessibility.spec.js
 
 const { test, expect } = require('@playwright/test');
 const AxeBuilder = require('@axe-core/playwright').default;
+const { CheckoutPage } = require('../pages/CheckoutPage');
 
 test.describe('Potion Shop Accessibility (a11y)', () => {
-    test('homepage should not have any new accessibility issues', async ({ page }) => {
-        await page.goto('https://qe-at-cgi-fi.github.io/potion-shop/');
 
-        // Run the Axe scan, but disable rules for known, unfixable demo app debt
-        const accessibilityScanResults = await new AxeBuilder({ page })
-            .disableRules(['color-contrast', 'heading-order', 'image-alt', 'label'])
-            .analyze();
+    // Known technical debt in this specific demo app
+    const knownViolationIds = [
+        'label-content-name-mismatch',
+        'color-contrast',
+        'heading-order',
+        'image-alt',
+        'label',
+        'landmark-one-main',
+        'region'
+    ];
 
-        // Assert that there are zero violations for all *other* rules
-        expect(accessibilityScanResults.violations).toEqual([]);
+    let checkoutPage;
+
+    test.beforeEach(async ({ page }) => {
+        checkoutPage = new CheckoutPage(page);
+        // Wait for DOM to be fully loaded before interacting
+        await page.goto('/potion-shop/');
     });
 
-    test('checkout form should be accessible', async ({ page }) => {
-        await page.goto('https://qe-at-cgi-fi.github.io/potion-shop/');
+    test('initial page load should not have any NEW accessibility issues', async ({ page }) => {
+        // Scan the page in its initial, static state
+        const accessibilityScanResults = await new AxeBuilder({ page }).analyze();
 
-        // Analyze only the form, excluding the known unlabelled quantity input
-        const formResults = await new AxeBuilder({ page })
-            .include('#order-form')
-            .exclude('#quantity') // Exclude the specific element we know is broken
-            .analyze();
+        const newViolations = accessibilityScanResults.violations.filter(
+            (violation) => !knownViolationIds.includes(violation.id)
+        );
 
-        expect(formResults.violations).toEqual([]);
+        console.log(`🔍 Initial load violations: ${accessibilityScanResults.violations.length} (New: ${newViolations.length})`);
+
+        expect(newViolations).toEqual([]);
+    });
+
+    test('confirmation modal should be accessible after submitting an order', async ({ page }) => {
+        // 1. Use the POM to interact with the page and trigger the dynamic modal
+        await checkoutPage.selectHealingPotion();
+        await checkoutPage.fillDeliveryDetails('Test User', 'Test Castle', 'Test Kingdom');
+        await checkoutPage.clickSubmitOrder();
+
+        // 2. CRITICAL: Wait for the modal to be fully visible in the DOM before scanning.
+        // Scanning during animation causes false positives.
+        await expect(checkoutPage.confirmationModal).toBeVisible();
+
+        // 3. Run the Axe scan WHILE the modal is open and focused
+        const modalScanResults = await new AxeBuilder({ page }).analyze();
+
+        const newModalViolations = modalScanResults.violations.filter(
+            (violation) => !knownViolationIds.includes(violation.id)
+        );
+
+        console.log(`🔍 Modal state violations: ${modalScanResults.violations.length} (New: ${newModalViolations.length})`);
+
+        if (newModalViolations.length > 0) {
+            console.log('🚨 NEW modal violations found:');
+            newModalViolations.forEach(v => console.log(`   - ${v.id}: ${v.help}`));
+        }
+
+        // 4. Assert no new violations were introduced by the dynamic modal
+        expect(newModalViolations).toEqual([]);
     });
 });

@@ -8,7 +8,7 @@ test.describe('Potion Shop Checkout Flow', () => {
 
     test.beforeEach(async ({ page }) => {
         checkoutPage = new CheckoutPage(page);
-        await page.goto('https://qe-at-cgi-fi.github.io/potion-shop/');
+        await page.goto('/potion-shop/');
     });
 
     test('1. Happy Path: Should successfully brew an order with valid details', async () => {

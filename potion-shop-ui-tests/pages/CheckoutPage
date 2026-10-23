@@ -4,6 +4,7 @@ class CheckoutPage {
     constructor(page) {
         this.page = page;
 
+
         // --- Locators for the Potion Builder (Targeting the visible card) ---
         this.healingPotionRadio = page.locator('.potion-card').filter({ hasText: 'Healing Draught' });
         this.strengthPotionRadio = page.locator('.potion-card').filter({ hasText: 'Elixir of Strength' });
@@ -50,12 +51,14 @@ class CheckoutPage {
     // --- ACTION METHODS ---
 
     async selectHealingPotion() {
+        await this.page.screenshot({ path: 'debug-select-healing-potion.png', fullPage: true });
         await this.healingPotionRadio.click();
     }
 
     async selectInvisibilityPotion() {
-            await this.invisibilityPotionRadio.click();
-        }
+        await this.page.screenshot({ path: 'debug-before-select-invisib-potion.png', fullPage: true });
+        await this.invisibilityPotionRadio.click();
+    }
 
     async fillDeliveryDetails(name, castle, kingdom) {
         await this.nameInput.fill(name);

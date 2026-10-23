@@ -1,8 +1,8 @@
 // tests/API tests/api-negative.spec.js
 
 const { test, expect } = require('@playwright/test');
-const { ApiHelper } = require('../../helpers/ApiHelper');
-const { BookingSpecs } = require('../../specs/BookingSpecs');
+const { ApiHelper } = require('../helpers/ApiHelper');
+const { BookingSpecs } = require('../specs/BookingSpecs');
 
 test.describe('Restful Booker Platform - Negative Flow', () => {
     let api;
